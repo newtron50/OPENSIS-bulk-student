@@ -20,6 +20,10 @@ if ($ver['value']>=6.0 && $ver['value']<=6.4) {
 }
 echo '</p>';
 echo '<h4>Use the data presented below to help you fill out the upload.csv file with the correct information</h4>';
+echo '<p><b>The basic upload CSV form will require the following:</b><br>
+<ul><li>Grade ID</li><li>Enrollment Code</li><li>Next School ID -<i> usually your current school id</i></li><li>Profile ID</li><li>School ID</li><li>Calendar ID</li></p>';
+echo '<p><b>For the upload CSV form with Address & Parental data, the following is required in addition to the data listed above:</b><br>
+<ul><li>Profile ID for Parents</li><ul>Information not listed here:<li>Custody (Y/N)</li></p>';
 $sch="SELECT * FROM schools";
 $sch1= mysqli_query($mysqli,$sch);
 echo '<p>OPENSIS schools available:</p>';
@@ -31,7 +35,7 @@ $calen=$mysqli->query("SELECT * FROM school_calendars where syear=(SELECT MAX(sy
 $cal = $calen->fetch_assoc();
 $syear=$cal['syear'];
 	echo '<span style="padding-left:50px;"></span><b>Year: '.$cal['title'].'</b><br>';
-	echo '<span style="padding-left:50px;"></span><b>Calendar ID: '.$cal['calendar_id'].'</b><br>';
+	echo '<span style="padding-left:50px;"></span><b>--> Calendar ID: '.$cal['calendar_id'].'</b><br>';
 	$enr="SELECT * FROM student_enrollment_codes where syear = $syear";
 	$enr1= mysqli_query($mysqli,$enr);
 while ($enroll=mysqli_fetch_array($enr1, MYSQLI_ASSOC)) {
@@ -39,12 +43,21 @@ while ($enroll=mysqli_fetch_array($enr1, MYSQLI_ASSOC)) {
 }
 $prof=$mysqli->query("SELECT * FROM user_profiles where profile='student'");
 $profile = $prof->fetch_assoc();
-	echo '<br><span style="padding-left:50px;"></span>Student profile ID: <b>'.$profile['id'].'</b><br>';
+	echo '<br><h3><span style="padding-left:50px;"></span>--> Student profile ID: '.$profile['id'].'</h3><br>';
 $prof5="SELECT * FROM user_profiles";
 $prof1= mysqli_query($mysqli,$prof5);
 	echo '<div style="padding-left:70px;"><i>Other system profiles: (only needed if you don\'t have a student profile listed above)</i><br><span style="padding-left:70px;"><table>';
 while ($profiles=mysqli_fetch_array($prof1, MYSQLI_ASSOC)) {
-	echo '<tr><td>'.$profiles['title'].'</td><td> ID#: <b>'.$profiles['id'].'</b></td></tr>';
+	echo '<tr><td>';
+$titleid=$profiles['title'];
+if ($titleid=='Parent' OR $titleid=='Student') {
+  echo '<b>--> ';
+}
+echo  $profiles['title'].'</td><td> ';
+if ($titleid=='Parent' OR $titleid=='Student') {
+  echo '<b>--> ';
+}
+echo 'ID#: '.$profiles['id'].'</b></td></tr>';
 
 }
 echo '</table></div>';
